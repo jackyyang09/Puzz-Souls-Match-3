@@ -15,6 +15,9 @@ public class GameStateManager : MonoBehaviour
     [SerializeField]
     Skill attackSkill;
 
+    [SerializeField]
+    Skill distanceSkill;
+
     public static GameStateManager instance;
 
     // Start is called before the first frame update
@@ -39,16 +42,23 @@ public class GameStateManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //void Update()
+    //{
+    //    
+    //}
 
     public void AttackEnemy()
     {
         if (attackSkill.GetValue() <= 0) return;
         attackSkill.DecreaseCount();
-        currentEnemy.TakeDamage(10, Enemy.DamageType.Normal); // Debug number lol, use an actual value in the future
+        currentEnemy.TakeDamage(50, Enemy.DamageType.Normal); // Debug number lol, use an actual value in the future
+    }
+
+    public void IncreaseDistance()
+    {
+        if (distanceSkill.GetValue() <= 0) return;
+        distanceSkill.DecreaseCount();
+        currentEnemy.IncreaseDistance(10); // Debug number lol, use an actual value in the future
     }
 
     /// <summary>

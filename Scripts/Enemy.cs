@@ -54,23 +54,24 @@ public class Enemy : MonoBehaviour
     /// Rename these to "distance"
     /// </summary>
     [SerializeField]
-    float attackCooldown = 10.0f;            // TODO: Seconds it takes for enemy to deal consecutive attacks after first attack
-
+    float maxDistance = 15f;
     [SerializeField]
-    float INITIAL_ADDITIONAL_CD = 10.0f;      // TODO: additional seconds it takes for enemy to fill its action gauge to do first attak
-
-    // TO-DO, attack array, allow user to input specific attack pattern for enemy (ie. enemy that attacks per 10 secs, or enemy that does a double attack per 10 secs)
+    float currentDistance = 15f;
 
     Animator anim;
     Rigidbody2D rb;
 
     [SerializeField]
     UnityEngine.UI.Image healthImage;
+    [SerializeField]
+    TMPro.TextMeshProUGUI distanceText;
 
     public GameObject enemy;
 
     private static bool isAttacking = false;
     private static bool isColliding = false;
+
+    bool attackedOnce = false;
 
     void Awake()
     {
@@ -83,29 +84,56 @@ public class Enemy : MonoBehaviour
     // TO-DO: Fill enemy action gauge over time then make enemy do attack action 
     void Update()
     {
-        switch (currentState)
+        if (currentDistance > 0)
         {
-            case State.Walking:
-                transform.Translate(Vector3.left * moveSpeed * 0.01f * Time.deltaTime, Space.World);
-                anim.SetTrigger("walk");
-                if (transform.position.x < 1.35) {  // Woop, melee range
-                    currentState = State.Attacking;
-                }
-                break;
-            case State.Attacking:
-                Debug.Log("ATTACKING");
-                anim.SetTrigger("attack");
-                if (transform.position.x > 1.35) {  // Woop, melee range
-                    anim.SetTrigger("walk");
-                    currentState = State.Walking;
-                }
-                break;
-            case State.Idling:
-                Debug.Log("IDLING");
-                break;
+            currentDistance -= Time.deltaTime;
+            UpdateDistanceText();
         }
-        
+        else if (!attackedOnce)
+        {
+            anim.SetTrigger("attack");
+            attackedOnce = true;
+        }
 
+        //switch (currentState)
+        //{
+        //    case State.Walking:
+        //        transform.Translate(Vector3.left * moveSpeed * 0.01f * Time.deltaTime, Space.World);
+        //        anim.SetTrigger("walk");
+        //        if (transform.position.x < 1.35) {  // Woop, melee range
+        //            currentState = State.Attacking;
+        //        }
+        //        break;
+        //    case State.Attacking:
+        //        Debug.Log("ATTACKING");
+        //        anim.SetTrigger("attack");
+        //        if (transform.position.x > 1.35) {  // Woop, melee range
+        //            anim.SetTrigger("walk");
+        //            currentState = State.Walking;
+        //        }
+        //        break;
+        //    case State.Idling:
+        //        Debug.Log("IDLING");
+        //        break;
+        //}
+    }
+
+    public void IncreaseDistance(float amount)
+    {
+        currentDistance += amount;
+        UpdateDistanceText();
+    }
+
+    public void ResetDistance()
+    {
+        currentDistance = maxDistance;
+        UpdateDistanceText();
+        attackedOnce = false;
+    }
+
+    public void UpdateDistanceText()
+    {
+        distanceText.text = currentDistance.ToString();
     }
 
     //private void OnEnable()
